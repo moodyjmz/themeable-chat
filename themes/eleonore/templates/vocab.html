@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mes Mots Français — Éleonore</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/theme.css">
+<style>
+  body { padding: 0 16px; }
+
+  .search-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .search-input {
+    background: var(--surface-input);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-style: italic;
+    outline: none;
+    width: 100%;
+    max-width: 320px;
+    transition: border-color 0.2s;
+  }
+
+  .search-input::placeholder { color: var(--text-muted); font-style: italic; }
+  .search-input:focus { border-color: var(--accent-hover); }
+
+  .word-count {
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .card {
+    background: var(--surface-card);
+    border: var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 20px 18px 16px;
+    animation: fadeUp 0.3s ease forwards;
+    opacity: 0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-glow);
+  }
+
+  .card.hidden-card { display: none; }
+
+  .card-front {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-word {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-style: italic;
+    color: var(--accent-light);
+    line-height: 1.2;
+  }
+
+  .speak-btn {
+    background: transparent;
+    border: 1px solid var(--accent-border);
+    color: var(--text-muted);
+    border-radius: var(--radius);
+    padding: 3px 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .speak-btn:hover {
+    border-color: var(--accent-hover);
+    color: var(--accent);
+  }
+
+  .speak-btn.speaking {
+    border-color: var(--accent);
+    color: var(--accent);
+    animation: pulse 0.8s infinite;
+  }
+
+  .card-meaning {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .card-date {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .no-results {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 40px 0;
+    grid-column: 1 / -1;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-rule"><span>✦</span></div>
+    <div class="name">Mes Mots Français</div>
+    <div class="subtitle">La collection de Sophia</div>
+    <div class="intro-card">
+      Ah, regardez — every word here is one you have gathered on our travels through history together.
+      Press ♪ to hear how it sounds, chérie. A language is learned one word at a time.
+    </div>
+  </div>
+
+  <div class="word-count" id="wordCount">{{wordCount}} mots</div>
+
+  <div class="search-row">
+    <input
+      class="search-input"
+      id="searchInput"
+      placeholder="chercher un mot…"
+      oninput="filterCards()"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="cards-grid" id="cardsGrid">
+    {{cards}}
+  </div>
+
+  <div style="text-align:center">
+    <a href="/" class="btn btn-ghost">← Retourner à Éleonore</a>
+  </div>
+
+</div>
+<script src="/speech.js"></script>
+<script>
+  const totalWords = {{wordCount}};
+
+  document.querySelectorAll('.card').forEach((card, i) => {
+    card.style.animationDelay = (i * 0.03) + 's';
+  });
+
+  document.querySelectorAll('.speak-btn').forEach(btn => {
+    const word = btn.dataset.word;
+    btn.addEventListener('click', () => window.speakFrench(word, btn));
+  });
+
+  function filterCards() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(card => {
+      const word = card.querySelector('.card-word').textContent.toLowerCase();
+      const meaning = card.querySelector('.card-meaning').textContent.toLowerCase();
+      const match = !q || word.includes(q) || meaning.includes(q);
+      card.classList.toggle('hidden-card', !match);
+      if (match) visible++;
+    });
+    document.getElementById('wordCount').textContent = q
+      ? visible + ' résultat' + (visible !== 1 ? 's' : '')
+      : totalWords + ' mots';
+  }
+</script>
+</body>
+</html>

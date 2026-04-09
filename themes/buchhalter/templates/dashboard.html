@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pfennigfuchs — Übersicht</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/theme.css">
+<style>
+  body { padding: 48px 24px; }
+  .lang-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    background: var(--surface-card);
+    border: var(--border-subtle);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lang-toggle:hover {
+    color: var(--accent-light);
+    border-color: var(--accent-hover);
+  }
+</style>
+</head>
+<body>
+<button class="lang-toggle" id="langToggle">EN</button>
+
+<div class="container">
+
+  <div class="header">
+    <div class="portrait-frame">📊</div>
+    <div class="name" style="font-size:1.8rem" data-i18n="title">Übersicht {{year}}</div>
+    <div class="subtitle" data-i18n="subtitle">Ihr finanzieller Überblick</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-number">€{{totalIncome}}</span>
+      <span class="stat-label" data-i18n="income">Einnahmen</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">€{{totalExpenses}}</span>
+      <span class="stat-label" data-i18n="expenses">Ausgaben</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{{transactionCount}}</span>
+      <span class="stat-label" data-i18n="transactions">Transaktionen</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{{sessionCount}}</span>
+      <span class="stat-label" data-i18n="sessions">Gespräche</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title" data-i18n="byCategory">Nach Kategorie</div>
+    <table>
+      <tr>
+        <th data-i18n="thCategory">Kategorie</th>
+        <th data-i18n="thIncome">Einnahmen</th>
+        <th data-i18n="thExpenses">Ausgaben</th>
+        <th data-i18n="thCount">Anzahl</th>
+      </tr>
+      {{summaryRows}}
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title" data-i18n="taxRelevant">Steuerrelevante Posten</div>
+    <table>
+      <tr>
+        <th data-i18n="thDate">Datum</th>
+        <th data-i18n="thDescription">Beschreibung</th>
+        <th data-i18n="thAmount">Betrag</th>
+        <th data-i18n="thTaxCategory">Steuerkategorie</th>
+      </tr>
+      {{taxRows}}
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title" data-i18n="uploadedDocs">Hochgeladene Dokumente</div>
+    <table>
+      <tr>
+        <th data-i18n="thFile">Datei</th>
+        <th data-i18n="thType">Typ</th>
+        <th data-i18n="thProcessed">Verarbeitet</th>
+        <th data-i18n="thTransactions">Transaktionen</th>
+        <th data-i18n="thDate">Datum</th>
+      </tr>
+      {{docRows}}
+    </table>
+  </div>
+
+  <div style="text-align:center;margin-top:32px">
+    <a href="/" class="btn btn-ghost" data-i18n="backToChat">← Zurück zu Pfennigfuchs</a>
+    &nbsp;
+    <a href="/reports" class="btn btn-ghost" data-i18n="reportsLink">Berichte →</a>
+  </div>
+
+</div>
+
+<script>
+const I18N = {
+  de: {
+    title: 'Übersicht {{year}}',
+    subtitle: 'Ihr finanzieller Überblick',
+    income: 'Einnahmen', expenses: 'Ausgaben', transactions: 'Transaktionen', sessions: 'Gespräche',
+    byCategory: 'Nach Kategorie',
+    thCategory: 'Kategorie', thIncome: 'Einnahmen', thExpenses: 'Ausgaben', thCount: 'Anzahl',
+    taxRelevant: 'Steuerrelevante Posten',
+    thDate: 'Datum', thDescription: 'Beschreibung', thAmount: 'Betrag', thTaxCategory: 'Steuerkategorie',
+    uploadedDocs: 'Hochgeladene Dokumente',
+    thFile: 'Datei', thType: 'Typ', thProcessed: 'Verarbeitet', thTransactions: 'Transaktionen',
+    backToChat: '\u2190 Zurück zu Pfennigfuchs', reportsLink: 'Berichte \u2192',
+    langToggle: 'EN'
+  },
+  en: {
+    title: 'Overview {{year}}',
+    subtitle: 'Your financial summary',
+    income: 'Income', expenses: 'Expenses', transactions: 'Transactions', sessions: 'Sessions',
+    byCategory: 'By Category',
+    thCategory: 'Category', thIncome: 'Income', thExpenses: 'Expenses', thCount: 'Count',
+    taxRelevant: 'Tax-Relevant Items',
+    thDate: 'Date', thDescription: 'Description', thAmount: 'Amount', thTaxCategory: 'Tax Category',
+    uploadedDocs: 'Uploaded Documents',
+    thFile: 'File', thType: 'Type', thProcessed: 'Processed', thTransactions: 'Transactions',
+    backToChat: '\u2190 Back to Pfennigfuchs', reportsLink: 'Reports \u2192',
+    langToggle: 'DE'
+  }
+};
+
+let currentLang = localStorage.getItem('buchhalter-lang') || 'de';
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('buchhalter-lang', lang);
+  document.documentElement.lang = lang;
+  const strings = I18N[lang];
+  if (!strings) return;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (strings[key]) el.textContent = strings[key];
+  });
+  document.getElementById('langToggle').textContent = strings.langToggle;
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  applyLang(currentLang === 'de' ? 'en' : 'de');
+});
+
+applyLang(currentLang);
+</script>
+</body>
+</html>

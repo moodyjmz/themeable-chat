@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éleonore — Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/theme.css">
+<style>
+  body { padding: 48px 24px; }
+  td.word {
+    font-style: italic;
+    color: var(--accent-light);
+    width: 30%;
+    font-size: 1.1rem;
+  }
+  td.meaning { color: var(--text-secondary); width: 50%; }
+  td.date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: right;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-rule"><span>✦</span></div>
+    <div class="name" style="font-size:1.8rem">Éleonore — Journal</div>
+    <div class="subtitle">Sophia's progress</div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat">
+      <span class="stat-number">{{sessionCount}}</span>
+      <span class="stat-label">Sessions</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">{{wordCount}}</span>
+      <span class="stat-label">French words</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">French vocabulary</div>
+    {{wordTable}}
+  </div>
+
+  <div class="section">
+    <div class="section-title">Wellbeing notes</div>
+    {{wellbeing}}
+  </div>
+
+  <div style="text-align:center;margin-top:32px">
+    <a href="/" class="btn btn-ghost">← Back to Éleonore</a>
+  </div>
+
+</div>
+</body>
+</html>

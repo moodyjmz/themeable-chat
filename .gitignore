@@ -1,0 +1,9 @@
+node_modules/
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/memory_index/
+uploads/
+.env
+themes/*/config.local.js
+.DS_Store

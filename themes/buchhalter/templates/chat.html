@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{themeName}}</title>
+<link href="https://fonts.googleapis.com/css2?family={{googleFonts}}&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/theme.css">
+<style>
+  .toolbar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    display: flex;
+    gap: 6px;
+  }
+  .toolbar button {
+    background: var(--surface-card);
+    border: var(--border-subtle);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toolbar button:hover {
+    color: var(--accent-light);
+    border-color: var(--accent-hover);
+  }
+  .toolbar button.active {
+    color: var(--accent-light);
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .view { display: none; }
+  .view.active { display: flex; flex-direction: column; }
+  #view-dashboard.active, #view-reports.active { display: block; }
+  .nav-link { cursor: pointer; }
+  /* Unlock scroll for non-chat views */
+  body.view-dashboard, body.view-reports {
+    height: auto !important;
+    overflow: auto !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="nav-link" data-view="chat">Chat</button>
+  <button class="nav-link" data-view="dashboard" data-i18n="dashboard">Übersicht</button>
+  <button class="nav-link" data-view="reports" data-i18n="reports">Berichte</button>
+  <button id="userToggle" class="active">Nicki</button>
+  <button id="langToggle">EN</button>
+</div>
+
+<!-- ═══ CHAT VIEW ═══════════════════════════════════════════════════════ -->
+<div class="view active" id="view-chat">
+<div class="container">
+
+  <div class="header">
+    <div class="portrait-frame">{{themeIcon}}</div>
+    <div class="name">{{themeName}}</div>
+    <div class="subtitle" data-i18n="subtitle">{{themeSubtitle}}</div>
+    <div class="intro-card" data-i18n="intro">{{themeIntro}}</div>
+  </div>
+
+  <div class="chat-area" id="chatArea"></div>
+
+  <div class="input-area">
+    <div class="input-rule"></div>
+    <div class="input-row">
+      <label class="upload-btn" id="uploadBtn" data-i18n-title="uploadTitle" title="Datei hochladen">
+        📎
+        <input type="file" id="fileInput" accept=".csv,.pdf,.xlsx,.xls,.jpg,.jpeg,.png,.md,.txt,.json" hidden />
+      </label>
+      <textarea
+        class="input-field"
+        id="inputField"
+        data-i18n-placeholder="placeholder"
+        placeholder="{{placeholder}}"
+        rows="1"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" data-i18n="send">{{sendLabel}}</button>
+    </div>
+    <div class="footer-link">
+      <a class="nav-link" data-view="dashboard" data-i18n="dashboard">Übersicht</a>
+      &nbsp;·&nbsp;
+      <a class="nav-link" data-view="reports" data-i18n="reports">Berichte</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ DASHBOARD VIEW ══════════════════════════════════════════════════ -->
+<div class="view" id="view-dashboard">
+<div class="container" style="padding-top:48px">
+
+  <div class="header">
+    <div class="portrait-frame">📊</div>
+    <div class="name" style="font-size:1.8rem" data-i18n="dashTitle">Übersicht</div>
+    <div class="subtitle" data-i18n="dashSubtitle">Ihr finanzieller Überblick</div>
+  </div>
+
+  <div id="dashboardContent"><p class="no-content">Laden...</p></div>
+
+  <div style="text-align:center;margin-top:32px">
+    <a class="btn btn-ghost nav-link" data-view="chat" data-i18n="backToChat">← Zurück zu Pfennigfuchs</a>
+    &nbsp;
+    <a class="btn btn-ghost nav-link" data-view="reports" data-i18n="reportsLink">Berichte →</a>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ REPORTS VIEW ════════════════════════════════════════════════════ -->
+<div class="view" id="view-reports">
+<div class="container" style="padding-top:48px">
+
+  <div class="header">
+    <div class="portrait-frame">📊</div>
+    <div class="name" style="font-size:1.8rem" data-i18n="repTitle">Berichte</div>
+    <div class="subtitle" data-i18n="repSubtitle">XLSX-Export nach Steuerjahr</div>
+  </div>
+
+  <div id="reportsContent"><p class="no-content">Laden...</p></div>
+
+  <div style="text-align:center;margin-top:32px">
+    <a class="btn btn-ghost nav-link" data-view="chat" data-i18n="backToChat">← Zurück zu Pfennigfuchs</a>
+    &nbsp;
+    <a class="btn btn-ghost nav-link" data-view="dashboard" data-i18n="dashboardLink">Übersicht</a>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ─── Config ─────────────────────────────────────────────────────────────────
+const I18N = {{i18n}};
+const USERS = {{users}};
+const USER_IDS = Object.keys(USERS.profiles);
+
+// Add dashboard/reports i18n keys
+I18N.de = Object.assign(I18N.de, {
+  dashTitle: 'Übersicht', dashSubtitle: 'Ihr finanzieller Überblick',
+  repTitle: 'Berichte', repSubtitle: 'XLSX-Export nach Steuerjahr',
+  backToChat: '\u2190 Zurück zu Pfennigfuchs',
+  reportsLink: 'Berichte \u2192', dashboardLink: 'Übersicht',
+  income: 'Einnahmen', expenses: 'Ausgaben', transactions: 'Transaktionen', sessions: 'Gespräche',
+  byCategory: 'Nach Kategorie',
+  thCategory: 'Kategorie', thIncome: 'Einnahmen', thExpenses: 'Ausgaben', thCount: 'Anzahl',
+  taxRelevant: 'Steuerrelevante Posten',
+  thDate: 'Datum', thDescription: 'Beschreibung', thAmount: 'Betrag', thTaxCategory: 'Steuerkategorie',
+  uploadedDocs: 'Hochgeladene Dokumente',
+  thFile: 'Datei', thType: 'Typ', thProcessed: 'Verarbeitet',
+  thYear: 'Jahr', noData: 'Keine Daten vorhanden'
+});
+I18N.en = Object.assign(I18N.en, {
+  dashTitle: 'Overview', dashSubtitle: 'Your financial summary',
+  repTitle: 'Reports', repSubtitle: 'XLSX export by tax year',
+  backToChat: '\u2190 Back to Pfennigfuchs',
+  reportsLink: 'Reports \u2192', dashboardLink: 'Overview',
+  income: 'Income', expenses: 'Expenses', transactions: 'Transactions', sessions: 'Sessions',
+  byCategory: 'By Category',
+  thCategory: 'Category', thIncome: 'Income', thExpenses: 'Expenses', thCount: 'Count',
+  taxRelevant: 'Tax-Relevant Items',
+  thDate: 'Date', thDescription: 'Description', thAmount: 'Amount', thTaxCategory: 'Tax Category',
+  uploadedDocs: 'Uploaded Documents',
+  thFile: 'File', thType: 'Type', thProcessed: 'Processed',
+  thYear: 'Year', noData: 'No data available'
+});
+
+// ─── SPA Router ─────────────────────────────────────────────────────────────
+var currentView = 'chat';
+
+function navigateTo(viewName, pushState) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+  var el = document.getElementById('view-' + viewName);
+  if (el) el.classList.add('active');
+  currentView = viewName;
+
+  // Toggle body class for scroll control
+  document.body.classList.remove('view-chat', 'view-dashboard', 'view-reports');
+  document.body.classList.add('view-' + viewName);
+
+  var urlMap = { chat: '/', dashboard: '/dashboard', reports: '/reports' };
+  var titleMap = { chat: '{{themeName}}', dashboard: 'Übersicht', reports: 'Berichte' };
+  if (pushState !== false) {
+    history.pushState({ view: viewName }, '', urlMap[viewName] || '/');
+  }
+  document.title = titleMap[viewName] || '{{themeName}}';
+  window.scrollTo(0, 0);
+
+  // Lazy load data
+  if (viewName === 'dashboard') loadDashboard();
+  if (viewName === 'reports') loadReports();
+}
+
+window.addEventListener('popstate', function(e) {
+  var view = (e.state && e.state.view) || 'chat';
+  navigateTo(view, false);
+});
+
+// Nav link clicks
+document.addEventListener('click', function(e) {
+  var link = e.target.closest('.nav-link');
+  if (link) {
+    e.preventDefault();
+    navigateTo(link.getAttribute('data-view'));
+  }
+});
+
+// Handle initial URL
+function initRouter() {
+  var path = window.location.pathname;
+  if (path === '/dashboard') navigateTo('dashboard', false);
+  else if (path === '/reports') navigateTo('reports', false);
+  else navigateTo('chat', false);
+}
+
+// ─── Dashboard loader ───────────────────────────────────────────────────────
+var dashboardLoaded = false;
+
+function loadDashboard() {
+  const container = document.getElementById('dashboardContent');
+  container.innerHTML = '<p class="no-content">Laden...</p>';
+  fetch('/api/dashboard-data')
+    .then(r => r.json())
+    .then(data => {
+      const s = I18N[currentLang] || I18N.de;
+
+      const summaryRows = data.summary.length === 0
+        ? `<tr><td colspan="4" class="no-content">${s.noData}</td></tr>`
+        : data.summary.map(r => `
+            <tr>
+              <td>${r.category || 'Unkategorisiert'}</td>
+              <td class="amount positive">\u20AC${(r.income || 0).toFixed(2)}</td>
+              <td class="amount negative">\u20AC${Math.abs(r.expenses || 0).toFixed(2)}</td>
+              <td>${r.count}</td>
+            </tr>`).join('');
+
+      const taxRows = data.taxRelevant.length === 0
+        ? `<tr><td colspan="4" class="no-content">${s.noData}</td></tr>`
+        : data.taxRelevant.map(t => `
+            <tr>
+              <td>${t.date}</td>
+              <td>${t.description}</td>
+              <td class="amount ${t.amount >= 0 ? 'positive' : 'negative'}">\u20AC${t.amount.toFixed(2)}</td>
+              <td>${t.tax_category || t.category || ''}</td>
+            </tr>`).join('');
+
+      const docRows = data.documents.length === 0
+        ? `<tr><td colspan="4" class="no-content">${s.noData}</td></tr>`
+        : data.documents.map(d => `
+            <tr>
+              <td>${d.original_name}</td>
+              <td>${d.file_type}</td>
+              <td>${d.processed ? '\u2713' : '\u23F3'}</td>
+              <td>${d.uploaded_at}</td>
+            </tr>`).join('');
+
+      container.innerHTML = `
+        <div class="stat-row">
+          <div class="stat"><span class="stat-number">\u20AC${data.totalIncome}</span><span class="stat-label">${s.income}</span></div>
+          <div class="stat"><span class="stat-number">\u20AC${data.totalExpenses}</span><span class="stat-label">${s.expenses}</span></div>
+          <div class="stat"><span class="stat-number">${data.transactionCount}</span><span class="stat-label">${s.transactions}</span></div>
+          <div class="stat"><span class="stat-number">${data.sessionCount}</span><span class="stat-label">${s.sessions}</span></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">${s.byCategory}</div>
+          <table>
+            <tr><th>${s.thCategory}</th><th>${s.thIncome}</th><th>${s.thExpenses}</th><th>${s.thCount}</th></tr>
+            ${summaryRows}
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">${s.taxRelevant}</div>
+          <table>
+            <tr><th>${s.thDate}</th><th>${s.thDescription}</th><th>${s.thAmount}</th><th>${s.thTaxCategory}</th></tr>
+            ${taxRows}
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">${s.uploadedDocs}</div>
+          <table>
+            <tr><th>${s.thFile}</th><th>${s.thType}</th><th>${s.thProcessed}</th><th>${s.thDate}</th></tr>
+            ${docRows}
+          </table>
+        </div>`;
+    })
+    .catch(() => {
+      container.innerHTML = '<p class="no-content">Fehler beim Laden</p>';
+    });
+}
+
+// ─── Reports loader ─────────────────────────────────────────────────────────
+function loadReports() {
+  const container = document.getElementById('reportsContent');
+  container.innerHTML = '<p class="no-content">Laden...</p>';
+  fetch('/api/reports-data')
+    .then(r => r.json())
+    .then(data => {
+      const s = I18N[currentLang] || I18N.de;
+
+      const yearRows = data.years.length === 0
+        ? `<tr><td colspan="5" class="no-content">${s.noData}</td></tr>`
+        : data.years.map(y => `
+            <tr>
+              <td>${y.year}</td>
+              <td class="amount positive">\u20AC${(y.total_income || 0).toFixed(2)}</td>
+              <td class="amount negative">\u20AC${Math.abs(y.total_expenses || 0).toFixed(2)}</td>
+              <td>${y.transaction_count}</td>
+              <td><a href="/reports/year/${y.year}" class="btn">Download XLSX</a></td>
+            </tr>`).join('');
+
+      container.innerHTML = `
+        <div class="section">
+          <table>
+            <tr><th>${s.thYear}</th><th>${s.income}</th><th>${s.expenses}</th><th>${s.transactions}</th><th></th></tr>
+            ${yearRows}
+          </table>
+        </div>`;
+    })
+    .catch(() => {
+      container.innerHTML = '<p class="no-content">Fehler beim Laden</p>';
+    });
+}
+
+// ─── Language toggle ────────────────────────────────────────────────────────
+let currentLang = localStorage.getItem('buchhalter-lang') || 'de';
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('buchhalter-lang', lang);
+  document.documentElement.lang = lang;
+
+  var strings = I18N[lang];
+  if (!strings) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (strings[key]) el.textContent = strings[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    if (strings[key]) el.placeholder = strings[key];
+  });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-title');
+    if (strings[key]) el.title = strings[key];
+  });
+
+  document.getElementById('langToggle').textContent = strings.langToggle;
+  document.body.setAttribute('data-user-name', strings.userName);
+  document.body.setAttribute('data-assistant-name', strings.assistantName);
+
+  // Re-render current data view if active
+  if (currentView === 'dashboard') loadDashboard();
+  if (currentView === 'reports') loadReports();
+}
+
+document.getElementById('langToggle').addEventListener('click', function() {
+  applyLang(currentLang === 'de' ? 'en' : 'de');
+});
+
+// ─── User profile toggle ───────────────────────────────────────────────────
+var storedUser = localStorage.getItem('buchhalter-user');
+let currentUser = (storedUser && USERS.profiles[storedUser]) ? storedUser : (USERS.default || 'her');
+localStorage.setItem('buchhalter-user', currentUser);
+
+function applyUser(userId) {
+  currentUser = userId;
+  localStorage.setItem('buchhalter-user', userId);
+
+  var profile = USERS.profiles[userId];
+  var btn = document.getElementById('userToggle');
+  btn.textContent = profile ? profile.name : userId;
+
+  fetch('/prompt?user=' + encodeURIComponent(userId))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (window.setSystemPrompt) window.setSystemPrompt(data.systemPrompt);
+    })
+    .catch(function() {});
+}
+
+document.getElementById('userToggle').addEventListener('click', function() {
+  var idx = USER_IDS.indexOf(currentUser);
+  var next = USER_IDS[(idx + 1) % USER_IDS.length];
+  // Save current chat, clear DOM, switch user, restore new user's chat
+  if (window.switchUserChat) window.switchUserChat();
+  applyUser(next);
+  // Restore new user's chat after localStorage key updates
+  setTimeout(function() {
+    if (window.restoreFromStorage) window.restoreFromStorage();
+  }, 100);
+});
+
+// ─── Init ───────────────────────────────────────────────────────────────────
+applyLang(currentLang);
+var initProfile = USERS.profiles[currentUser];
+if (initProfile) document.getElementById('userToggle').textContent = initProfile.name;
+initRouter();
+</script>
+<script src="/chat.js"></script>
+</body>
+</html>

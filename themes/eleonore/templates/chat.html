@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{themeName}}</title>
+<link href="https://fonts.googleapis.com/css2?family={{googleFonts}}&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-rule"><span>✦</span></div>
+    <div class="portrait-frame">{{themeIcon}}</div>
+    <div class="name">{{themeName}}</div>
+    <div class="subtitle">{{themeSubtitle}}</div>
+    <div class="intro-card">{{themeIntro}}</div>
+  </div>
+
+  <div class="chat-area" id="chatArea"></div>
+
+  <div class="input-area">
+    <div class="input-rule"></div>
+    <div class="input-row">
+      <textarea
+        class="input-field"
+        id="inputField"
+        placeholder="{{placeholder}}"
+        rows="1"
+      ></textarea>
+      <button class="send-btn" id="sendBtn">{{sendLabel}}</button>
+    </div>
+    <div class="footer-link"><a href="/vocab">mes mots français ✦</a></div>
+  </div>
+
+</div>
+
+<script src="/speech.js"></script>
+<script src="/chat.js"></script>
+</body>
+</html>

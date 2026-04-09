@@ -1,0 +1,25 @@
+/* ─── Éleonore theme — aristocratic purple/gold ─────────────────────────── */
+
+:root {
+  --bg-deep: #12100a;
+  --bg-mid: #1e1a10;
+  --accent: #c9a84c;
+  --accent-light: #e8cc7a;
+  --accent-glow: rgba(201,168,76,0.07);
+  --surface-bubble-assistant: rgba(42,21,53,0.4);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Cormorant Garamond', Georgia, serif;
+}
+
+body::after {
+  content: '❧';
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: var(--accent);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}

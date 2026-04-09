@@ -1,0 +1,22 @@
+{
+  "name": "themeable-chat",
+  "version": "1.0.0",
+  "description": "Themeable persona chat platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "eleonore": "THEME=eleonore node server.js",
+    "buchhalter": "THEME=buchhalter node server.js"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "better-sqlite3": "^12.8.0",
+    "busboy": "^1.6.0",
+    "csv-parser": "^3.0.0",
+    "exceljs": "^4.4.0",
+    "onnxruntime-node": "^1.21.0",
+    "pdf-parse": "^1.1.1",
+    "vectra": "^0.12.3"
+  }
+}

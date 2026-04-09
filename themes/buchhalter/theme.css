@@ -1,0 +1,235 @@
+/* ─── Buchhalter theme — professional green/steel ────────────────────────── */
+
+:root {
+  --bg-deep: #0f1117;
+  --bg-mid: #161922;
+  --text-primary: #e8eaf0;
+  --text-secondary: rgba(232,234,240,0.75);
+  --text-muted: rgba(232,234,240,0.4);
+  --accent: #4a9e7a;
+  --accent-light: #6bc49e;
+  --accent-glow: rgba(74,158,122,0.07);
+  --accent-border: rgba(74,158,122,0.2);
+  --accent-hover: rgba(74,158,122,0.6);
+  --surface-bubble-user: rgba(74,158,122,0.1);
+  --surface-bubble-assistant: rgba(30,35,50,0.6);
+  --surface-card: rgba(74,158,122,0.04);
+  --surface-input: rgba(74,158,122,0.04);
+  --font-display: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --font-size-body: 0.95rem;
+  --font-size-display: 1.5rem;
+  --radius: 4px;
+  --border-subtle: 1px solid rgba(74,158,122,0.15);
+  --alert-bg: rgba(180,140,20,0.15);
+  --alert-border: rgba(200,160,40,0.3);
+  --alert-text: #d4a840;
+}
+
+/* ─── Strip decorative elements ──────────────────────────────────────────── */
+
+body::before { display: none; }
+
+/* ─── Compact layout — fill viewport, no extra scroll ──────────────────── */
+
+body[data-theme="buchhalter"] {
+  height: 100vh;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+body[data-theme="buchhalter"] .container {
+  height: 100vh;
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+body[data-theme="buchhalter"] .chat-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+body[data-theme="buchhalter"] .chat-area:empty {
+  overflow: hidden;
+}
+
+body[data-theme="buchhalter"] .input-area {
+  position: relative;
+  flex-shrink: 0;
+  background: var(--bg-deep);
+}
+
+/* ─── Compact header ────────────────────────────────────────────────────── */
+
+.header {
+  padding: 32px 0 20px;
+}
+
+.header-rule { display: none; }
+
+.portrait-frame {
+  width: 52px;
+  height: 52px;
+  font-size: 1.6rem;
+  border-radius: 8px;
+  background: var(--surface-card);
+  border: var(--border-subtle);
+  box-shadow: none;
+}
+
+.name {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0;
+}
+
+.subtitle {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.intro-card {
+  font-style: normal;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  padding: 14px 18px;
+  margin: 16px 0 0;
+  text-align: left;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* ─── Markdown in bubbles ───────────────────────────────────────────────── */
+
+.message-bubble h1, .message-bubble h2, .message-bubble h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  margin: 12px 0 4px;
+}
+.message-bubble h1:first-child, .message-bubble h2:first-child, .message-bubble h3:first-child {
+  margin-top: 0;
+}
+.message-bubble p { margin: 6px 0; }
+.message-bubble p:first-child { margin-top: 0; }
+.message-bubble p:last-child { margin-bottom: 0; }
+.message-bubble ul, .message-bubble ol { margin: 6px 0; padding-left: 20px; }
+.message-bubble li { margin: 2px 0; }
+.message-bubble code {
+  background: rgba(74,158,122,0.12);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.88em;
+}
+.message-bubble pre {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.message-bubble pre code {
+  background: none;
+  padding: 0;
+}
+.message-bubble hr {
+  border: none;
+  border-top: 1px solid var(--accent-border);
+  margin: 10px 0;
+}
+
+/* ─── Messages ───────────────────────────────────────────────────────────── */
+
+.message.assistant .message-bubble {
+  font-style: normal;
+}
+
+.message-bubble {
+  line-height: 1.6;
+  border-radius: var(--radius);
+}
+
+.message.user .message-bubble {
+  border-bottom-right-radius: 0;
+}
+
+.message.assistant .message-bubble {
+  border-bottom-left-radius: 0;
+}
+
+/* ─── Input area ─────────────────────────────────────────────────────────── */
+
+.input-field {
+  font-size: 0.95rem;
+}
+
+.input-field::placeholder {
+  font-style: normal;
+}
+
+.send-btn {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Section titles ─────────────────────────────────────────────────────── */
+
+.section-title {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ─── Stats ──────────────────────────────────────────────────────────────── */
+
+.stat {
+  border-radius: var(--radius);
+}
+
+.stat-number {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  border-radius: var(--radius);
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+
+th {
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+td, th {
+  font-size: 0.9rem;
+}
+
+/* ─── Amount styling ─────────────────────────────────────────────────────── */
+
+.amount.positive { color: var(--accent-light); }
+.amount.negative { color: var(--alert-text); }
+
+/* ─── Footer links ───────────────────────────────────────────────────────── */
+
+.footer-link a {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
