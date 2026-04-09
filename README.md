@@ -80,13 +80,15 @@ npm install
 echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
 
 # Run a theme
-THEME=buchhalter node server.js
-THEME=eleonore node server.js
+THEME=buchhalter node server.js   # → http://localhost:3001
+THEME=eleonore node server.js     # → http://localhost:3000
 
 # Or use npm scripts
 npm run buchhalter
 npm run eleonore
 ```
+
+> **First run:** The embedding model (`paraphrase-multilingual-MiniLM-L12-v2`) is downloaded and loaded locally on first start. This is a one-time ~90 MB download — subsequent starts are fast.
 
 ## Configuration
 
