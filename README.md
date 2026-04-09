@@ -69,7 +69,7 @@ Be encouraging but challenge her — she likes to be pushed.`
 };
 ```
 
-The `userContext` string is appended to the system prompt. This is where you put anything personal about the user — age, goals, family context, learning style, safeguarding rules. Keep it out of `config.js` so it stays off GitHub.
+The `userContext` string is appended to the system prompt. This is where you put anything personal about the user — age, goals, family context, learning style, safeguarding rules.
 
 ## Quick Start
 
