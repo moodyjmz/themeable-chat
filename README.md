@@ -5,20 +5,71 @@ A local-first, multi-persona chat platform powered by Claude. Each theme is a se
 ## Themes
 
 ### Buchhalter (Heinrich Pfennigfuchs)
-German tax and accounting assistant. Comprehensive knowledge of Einkommensteuer, Kapitalertraege, crypto taxation, Immobilien, Selbstaendigkeit, and Vorsorge. Supports two user profiles (Nicki / James) with per-user chat history and tagged memory extraction.
+German tax and accounting assistant. Comprehensive knowledge of Einkommensteuer, Kapitalertraege, crypto taxation, Immobilien, Selbstaendigkeit, and Vorsorge. Supports multiple user profiles with per-user chat history and tagged memory extraction.
 
 - **Port:** 3001
 - **Chat model:** Claude Opus
 - **Extraction model:** Claude Sonnet
-- **Features:** File upload (CSV, PDF, XLSX, MD, TXT, JSON), financial dashboard, XLSX report export, EN/DE language toggle
+- **Features:** File upload (CSV, PDF, XLSX, MD, TXT, JSON), financial dashboard (SPA), XLSX report export, EN/DE language toggle
+
+#### What gets extracted
+
+| Field | What it captures | Where it shows |
+|-------|-----------------|----------------|
+| `transactions` | Dates, amounts, categories, tax relevance | Dashboard totals, reports, XLSX export |
+| `taxFacts` | Tax-relevant information from conversation | Memory injection |
+| `financialContext` | Broader financial situation details | Memory injection |
+| `actionItems` | Things the user needs to do | Memory injection |
+| `concerns` | Worries or issues flagged by the user | Memory injection |
+
+Transactions require both an explicit date and amount. All extracted facts are tagged with the user who mentioned them (e.g. `[Alice]`, `[Bob]`).
+
+#### Dashboard (SPA)
+
+The Buchhalter theme uses client-side routing — chat, dashboard, and reports are all in a single page. The dashboard shows income/expense totals, tax-relevant transaction count, and document uploads. Reports page offers XLSX export by year.
 
 ### Eleonore (Eleonore de Beaumont)
-French language and culture companion. Conversational French practice with vocabulary tracking and speech synthesis.
+French language and culture companion. A witty aristocratic persona who teaches French conversationally — vocabulary emerges naturally from dialogue rather than drills. Memory extraction tracks what the user talks about, what French words they've learned, and flags emotional concerns.
 
 - **Port:** 3000
 - **Chat model:** Claude Opus
 - **Extraction model:** Claude Sonnet
-- **Features:** French TTS, vocabulary page, dashboard
+- **Features:** French TTS, vocabulary page, dashboard with wellbeing notes
+
+#### What gets extracted
+
+After each conversation (min 4 messages, 5-minute cooldown), Sonnet extracts:
+
+| Field | What it captures | Where it shows |
+|-------|-----------------|----------------|
+| `frenchWords` | French words/phrases introduced or attempted | Vocabulary page, dashboard, memory injection |
+| `interests` | Topics the user engaged with enthusiastically | Memory injection (tiered: strong vs curious) |
+| `lifeDetails` | Personal facts the user mentioned about themselves | Memory injection via semantic search |
+| `emotionalNotes` | Flags if the user seemed upset or distressed | Dashboard "Wellbeing notes" section |
+
+#### Dashboard
+
+The Eleonore dashboard (`/dashboard`) shows:
+- **Session count** and **word count** at a glance
+- **French vocabulary table** — every word taught, with meaning and date
+- **Wellbeing notes** — emotional flags from conversations (empty when all positive)
+
+The vocabulary page (`/vocab`) shows flashcard-style word cards with TTS pronunciation.
+
+#### Recommended config.local.js
+
+```javascript
+// themes/eleonore/config.local.js
+module.exports = {
+  userName: 'Alice',          // used in memory injection ("Alice is especially interested in...")
+  timezone: 'Europe/Berlin',  // for "Right now" context in memory
+  userContext: `You are speaking with Alice, a 30-year-old living in Berlin.
+She is learning French for an upcoming trip to Paris.
+Be encouraging but challenge her — she likes to be pushed.`
+};
+```
+
+The `userContext` string is appended to the system prompt. This is where you put anything personal about the user — age, goals, family context, learning style, safeguarding rules. Keep it out of `config.js` so it stays off GitHub.
 
 ## Quick Start
 
@@ -127,31 +178,9 @@ themes/<id>/
 5. **Inject** — On next chat, relevant facts are retrieved via semantic search and injected into the system prompt as context
 6. **Cache** — Memory injection is cached for 60 seconds to avoid repeated embedding work
 
-### Buchhalter Extraction Schema
+## User Profiles
 
-```json
-{
-  "transactions": [{ "date": "YYYY-MM-DD", "description": "", "amount": 0, "category": "", "taxRelevant": true }],
-  "taxFacts": [""],
-  "financialContext": [""],
-  "actionItems": [""],
-  "concerns": [""]
-}
-```
-
-Transactions require both an explicit date and amount. Facts are tagged with the user name (`[Nicki]`, `[James]`) for attribution.
-
-## SPA Navigation (Buchhalter)
-
-The Buchhalter theme uses client-side routing — chat, dashboard, and reports are all in a single page. Switching views preserves chat state. URLs update via `pushState` so the back button works.
-
-## User Profiles (Buchhalter)
-
-Two profiles with different prompt hints:
-- **Nicki** — Practical focus: deductions, family benefits, budgeting, property costs
-- **James** — Technical focus: crypto taxation, investment optimisation, AfA strategies
-
-Each user has a separate chat history in localStorage. Extracted data is shared (same household) but tagged with who mentioned it.
+User profiles are configured in `config.local.js`. Each user gets a separate chat history in localStorage. Extracted data is shared but tagged with who mentioned it. See the Buchhalter config example above for the profile format.
 
 ## Token Optimisation
 

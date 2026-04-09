@@ -56,7 +56,7 @@
   <button class="nav-link" data-view="chat">Chat</button>
   <button class="nav-link" data-view="dashboard" data-i18n="dashboard">Übersicht</button>
   <button class="nav-link" data-view="reports" data-i18n="reports">Berichte</button>
-  <button id="userToggle" class="active">Nicki</button>
+  <button id="userToggle" class="active">User 1</button>
   <button id="langToggle">EN</button>
 </div>
 
@@ -145,7 +145,8 @@
 // ─── Config ─────────────────────────────────────────────────────────────────
 const I18N = {{i18n}};
 const USERS = {{users}};
-const USER_IDS = Object.keys(USERS.profiles);
+const USER_IDS = USERS ? Object.keys(USERS.profiles) : [];
+if (!USERS) document.getElementById('userToggle').style.display = 'none';
 
 // Add dashboard/reports i18n keys
 I18N.de = Object.assign(I18N.de, {
@@ -377,14 +378,14 @@ document.getElementById('langToggle').addEventListener('click', function() {
 
 // ─── User profile toggle ───────────────────────────────────────────────────
 var storedUser = localStorage.getItem('buchhalter-user');
-let currentUser = (storedUser && USERS.profiles[storedUser]) ? storedUser : (USERS.default || 'her');
+let currentUser = (USERS && storedUser && USERS.profiles[storedUser]) ? storedUser : (USERS ? USERS.default || 'default' : 'default');
 localStorage.setItem('buchhalter-user', currentUser);
 
 function applyUser(userId) {
   currentUser = userId;
   localStorage.setItem('buchhalter-user', userId);
 
-  var profile = USERS.profiles[userId];
+  var profile = USERS && USERS.profiles[userId];
   var btn = document.getElementById('userToggle');
   btn.textContent = profile ? profile.name : userId;
 
@@ -396,22 +397,24 @@ function applyUser(userId) {
     .catch(function() {});
 }
 
-document.getElementById('userToggle').addEventListener('click', function() {
-  var idx = USER_IDS.indexOf(currentUser);
-  var next = USER_IDS[(idx + 1) % USER_IDS.length];
-  // Save current chat, clear DOM, switch user, restore new user's chat
-  if (window.switchUserChat) window.switchUserChat();
-  applyUser(next);
-  // Restore new user's chat after localStorage key updates
-  setTimeout(function() {
-    if (window.restoreFromStorage) window.restoreFromStorage();
-  }, 100);
-});
+if (USERS) {
+  document.getElementById('userToggle').addEventListener('click', function() {
+    var idx = USER_IDS.indexOf(currentUser);
+    var next = USER_IDS[(idx + 1) % USER_IDS.length];
+    if (window.switchUserChat) window.switchUserChat();
+    applyUser(next);
+    setTimeout(function() {
+      if (window.restoreFromStorage) window.restoreFromStorage();
+    }, 100);
+  });
+}
 
 // ─── Init ───────────────────────────────────────────────────────────────────
 applyLang(currentLang);
-var initProfile = USERS.profiles[currentUser];
-if (initProfile) document.getElementById('userToggle').textContent = initProfile.name;
+if (USERS) {
+  var initProfile = USERS.profiles[currentUser];
+  if (initProfile) document.getElementById('userToggle').textContent = initProfile.name;
+}
 initRouter();
 </script>
 <script src="/chat.js"></script>
